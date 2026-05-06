@@ -27,8 +27,10 @@
 - **Why ESTravel** — Deep Pine section with subtle grain texture, stats (1996, 3,400+, 46, 100% Bespoke)
 - **Testimonials** — three editorial quote blocks
 - **Start Planning form** — name/email/race; success confirmation; copy reinforces "We do not sell discount packages"
-- **Footer** — division attribution, contact, "Bespoke · Never Discounted" tagline
+- **Footer** — division attribution, contact, "Bespoke · Never Discounted" tagline, discreet "By Referral" link (with lock icon)
+- **By Referral Vault** (Jan 2026 — v2) — `/referral` route with passphrase gate (current passphrase: `finishline`, stored client-side). Editorial lock page with "A quiet record of athletes we have served" + passphrase card + Request-an-Introduction fallback. Behind the gate: Directory with 16 redacted-initial entries (podiums, PRs, 6-Star finishes), filter pills (All/Marathon/Triathlon/Cycling), and a "If you've seen enough, we should talk" CTA back to home planning. SessionStorage persists unlock.
 - **Motion**: Lenis smooth scroll, framer-motion fade-up staggered reveals, parallax hero image, marquee, hover underline, image zoom
+- **Routing**: React Router with `/` (Home) and `/referral` (Vault)
 
 ## Deferred / Backlog (P1–P2)
 - P1: Real backend form endpoint (currently local-only success state)

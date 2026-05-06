@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import "@/App.css";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Lenis from "lenis";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import Referral from "./Referral";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -10,6 +12,7 @@ import {
   Quote,
   Plus,
   MapPin,
+  Lock,
 } from "lucide-react";
 
 const IMAGES = {
@@ -910,6 +913,15 @@ const Footer = () => {
               <li><a href="#philosophy" className="link-underline">Philosophy</a></li>
               <li><a href="#why" className="link-underline">Heritage</a></li>
               <li><a href="#destinations" className="link-underline">Destinations</a></li>
+              <li>
+                <Link
+                  to="/referral"
+                  data-testid="footer-referral-link"
+                  className="link-underline inline-flex items-center gap-1.5 text-[#595959]"
+                >
+                  <Lock size={11} /> By Referral
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -946,8 +958,8 @@ const Footer = () => {
   );
 };
 
-/* ---------------------------- App Root ---------------------------- */
-function App() {
+/* ---------------------------- Home page ---------------------------- */
+function Home() {
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.25,
@@ -978,6 +990,18 @@ function App() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+/* ---------------------------- App Root ---------------------------- */
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/referral" element={<Referral />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
