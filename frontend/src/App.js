@@ -162,7 +162,7 @@ const Hero = () => {
         >
           <div className="flex items-center gap-3">
             <span className="dot" />
-            <span className="eyebrow">Est. 1996 · Since the First Finish Line</span>
+            <span className="eyebrow">A Division of Outdoor Travel Adventures</span>
           </div>
           <div className="hidden md:flex items-center gap-3 text-[11px] tracking-[0.28em] uppercase text-[#595959] font-semibold">
             <span>Marathon</span>
