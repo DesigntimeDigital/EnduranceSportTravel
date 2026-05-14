@@ -23,6 +23,7 @@ const IMAGES = {
     "https://images.unsplash.com/photo-1760001868208-be45d747a46c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxyYWNpbmclMjBiaWN5Y2xlJTIwbW90aW9ufGVufDB8fHx8MTc3ODA5Nzk3MXww&ixlib=rb-4.1.0&q=85",
   kona: "https://images.unsplash.com/photo-1617332763121-0106f3dd4935?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHwyfHxoYXdhaWklMjBjb2FzdCUyMGtvbmF8ZW58MHx8fHwxNzc4MDk3OTU2fDA&ixlib=rb-4.1.0&q=85",
   nice: "https://images.pexels.com/photos/16584904/pexels-photo-16584904.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+  taupo: "https://images.unsplash.com/photo-1602593978328-fa9efcf69947?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHx0YXVwb3wlMjBuZXclMjBlYWxhbmR8ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
 };
 
 const fadeUp = {
@@ -528,6 +529,7 @@ const destinations = [
   { code: "B", city: "Boston", race: "Boston Marathon", country: "USA", month: "April" },
   { code: "K", city: "Kona", race: "Ironman World Championship", country: "Hawaii", month: "October" },
   { code: "N", city: "Nice", race: "Ironman France", country: "France", month: "June" },
+  { code: "T", city: "Taupo", race: "Ironman New Zealand", country: "New Zealand", month: "March" },
   { code: "B", city: "Berlin", race: "Berlin Marathon", country: "Germany", month: "September" },
   { code: "S", city: "St. George", race: "Ironman 70.3 Worlds", country: "USA", month: "September" },
   { code: "N", city: "New York", race: "NYC Marathon", country: "USA", month: "November" },
@@ -566,7 +568,7 @@ const Destinations = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="col-span-12 md:col-span-7 row-span-2 relative overflow-hidden group"
+            className="col-span-12 md:col-span-6 row-span-2 relative overflow-hidden group"
             style={{ minHeight: 480 }}
           >
             <img
@@ -589,7 +591,7 @@ const Destinations = () => {
             </div>
           </motion.a>
 
-          {/* Nice tall */}
+          {/* Nice */}
           <motion.a
             href="#start"
             data-testid="destination-nice"
@@ -597,7 +599,7 @@ const Destinations = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="col-span-12 md:col-span-5 row-span-2 relative overflow-hidden"
+            className="col-span-12 md:col-span-3 row-span-2 relative overflow-hidden"
             style={{ minHeight: 480 }}
           >
             <img
@@ -610,12 +612,43 @@ const Destinations = () => {
               <div className="eyebrow text-white/70">Featured · June</div>
             </div>
             <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-white max-w-md">
-              <div className="font-serif-display text-5xl md:text-7xl leading-none">Nice</div>
-              <div className="font-serif-display italic text-lg md:text-2xl mt-2 text-white/90">
+              <div className="font-serif-display text-4xl md:text-6xl leading-none">Nice</div>
+              <div className="font-serif-display italic text-base md:text-xl mt-2 text-white/90">
                 Ironman France · Côte d'Azur
               </div>
-              <div className="mt-6 inline-flex items-center gap-2 text-[12px] tracking-[0.22em] uppercase font-semibold">
+              <div className="mt-6 inline-flex items-center gap-2 text-[11px] md:text-[12px] tracking-[0.22em] uppercase font-semibold">
                 Plan a Nice Journey <ArrowUpRight size={14} />
+              </div>
+            </div>
+          </motion.a>
+
+          {/* Taupo */}
+          <motion.a
+            href="#start"
+            data-testid="destination-taupo"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="col-span-12 md:col-span-3 row-span-2 relative overflow-hidden"
+            style={{ minHeight: 480 }}
+          >
+            <img
+              src={IMAGES.taupo}
+              alt="Taupo"
+              className="hero-img absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute top-6 left-6 md:top-8 md:left-8 text-white/90">
+              <div className="eyebrow text-white/70">Featured · March</div>
+            </div>
+            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-white max-w-md">
+              <div className="font-serif-display text-4xl md:text-6xl leading-none">Taupo</div>
+              <div className="font-serif-display italic text-base md:text-xl mt-2 text-white/90">
+                Ironman New Zealand
+              </div>
+              <div className="mt-6 inline-flex items-center gap-2 text-[11px] md:text-[12px] tracking-[0.22em] uppercase font-semibold">
+                Plan a Taupo Journey <ArrowUpRight size={14} />
               </div>
             </div>
           </motion.a>
@@ -623,7 +656,7 @@ const Destinations = () => {
 
         {/* List of other destinations */}
         <div className="mt-16 border-t border-[#E5E3DB]">
-          {destinations.slice(0, 6).map((d, i) => (
+          {destinations.slice(0, 7).map((d, i) => (
             <motion.a
               key={d.city + i}
               href="#start"
