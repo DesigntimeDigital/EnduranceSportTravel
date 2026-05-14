@@ -24,6 +24,9 @@ const IMAGES = {
   kona: "https://images.unsplash.com/photo-1617332763121-0106f3dd4935?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHwyfHxoYXdhaWklMjBjb2FzdCUyMGtvbmF8ZW58MHx8fHwxNzc4MDk3OTU2fDA&ixlib=rb-4.1.0&q=85",
   nice: "https://images.pexels.com/photos/16584904/pexels-photo-16584904.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
   taupo: "https://images.unsplash.com/photo-1602593978328-fa9efcf69947?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHx0YXVwb3wlMjBuZXclMjBlYWxhbmR8ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
+  cairns: "https://images.unsplash.com/photo-1552252793-5e302d8f5daf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxjYWlybnMlMjBncmVhdCUyMmJhcmllcmVyJTIwdmFsdCB8ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
+  sydney: "https://images.unsplash.com/photo-1506973035872-a4ec18b86502?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxzeWRuZXklMjBob2JieSUyMHJhY2V8ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
+  queenstown: "https://images.unsplash.com/photo-1506973233135-2c4dee16ddb2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxxdWVlbnN0b3duJTIwbmV3JTIwZWFsYW5kJTIwc2tpJTIwbW91bnRhaW58ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
 };
 
 const fadeUp = {
@@ -530,6 +533,9 @@ const destinations = [
   { code: "K", city: "Kona", race: "Ironman World Championship", country: "Hawaii", month: "October" },
   { code: "N", city: "Nice", race: "Ironman France", country: "France", month: "June" },
   { code: "T", city: "Taupo", race: "Ironman New Zealand", country: "New Zealand", month: "March" },
+  { code: "C", city: "Cairns", race: "Ironman Cairns", country: "Australia", month: "July" },
+  { code: "S", city: "Sydney", race: "TCS Sydney Marathon", country: "Australia", month: "August" },
+  { code: "Q", city: "Queenstown", race: "NZ Queenstown Marathon", country: "New Zealand", month: "September" },
   { code: "B", city: "Berlin", race: "Berlin Marathon", country: "Germany", month: "September" },
   { code: "S", city: "St. George", race: "Ironman 70.3 Worlds", country: "USA", month: "September" },
   { code: "N", city: "New York", race: "NYC Marathon", country: "USA", month: "November" },
@@ -558,9 +564,8 @@ const Destinations = () => {
           </div>
         </div>
 
-        {/* Tetris-like grid */}
-        <div className="grid grid-cols-12 grid-rows-2 gap-4 md:gap-6 auto-rows-[minmax(0,1fr)]">
-          {/* Large featured - Kona */}
+       {/* Featured grid — hero row */}
+        <div className="grid grid-cols-12 gap-4 md:gap-6">
           <motion.a
             href="#start"
             data-testid="destination-kona"
@@ -568,7 +573,7 @@ const Destinations = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="col-span-12 md:col-span-6 row-span-2 relative overflow-hidden group"
+            className="col-span-12 md:col-span-6 relative overflow-hidden group"
             style={{ minHeight: 480 }}
           >
             <img
@@ -591,72 +596,167 @@ const Destinations = () => {
             </div>
           </motion.a>
 
-          {/* Nice */}
-          <motion.a
-            href="#start"
-            data-testid="destination-nice"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="col-span-12 md:col-span-3 row-span-2 relative overflow-hidden"
-            style={{ minHeight: 480 }}
-          >
-            <img
-              src={IMAGES.nice}
-              alt="Nice"
-              className="hero-img absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-            <div className="absolute top-6 left-6 md:top-8 md:left-8 text-white/90">
-              <div className="eyebrow text-white/70">Featured · June</div>
-            </div>
-            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-white max-w-md">
-              <div className="font-serif-display text-4xl md:text-6xl leading-none">Nice</div>
-              <div className="font-serif-display italic text-base md:text-xl mt-2 text-white/90">
-                Ironman France · Côte d'Azur
+          <div className="col-span-12 md:col-span-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {/* Nice */}
+            <motion.a
+              href="#start"
+              data-testid="destination-nice"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+              style={{ minHeight: 230 }}
+            >
+              <img
+                src={IMAGES.nice}
+                alt="Nice"
+                className="hero-img absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 text-white/90">
+                <div className="eyebrow text-white/70 text-[10px]">Featured · June</div>
               </div>
-              <div className="mt-6 inline-flex items-center gap-2 text-[11px] md:text-[12px] tracking-[0.22em] uppercase font-semibold">
-                Plan a Nice Journey <ArrowUpRight size={14} />
+              <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 text-white">
+                <div className="font-serif-display text-3xl md:text-5xl leading-none">Nice</div>
+                <div className="font-serif-display italic text-sm md:text-lg mt-1 text-white/90">
+                  Ironman France · Côte d'Azur
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase font-semibold">
+                  Plan a Nice Journey <ArrowUpRight size={12} />
+                </div>
               </div>
-            </div>
-          </motion.a>
+            </motion.a>
 
-          {/* Taupo */}
-          <motion.a
-            href="#start"
-            data-testid="destination-taupo"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="col-span-12 md:col-span-3 row-span-2 relative overflow-hidden"
-            style={{ minHeight: 480 }}
-          >
-            <img
-              src={IMAGES.taupo}
-              alt="Taupo"
-              className="hero-img absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-            <div className="absolute top-6 left-6 md:top-8 md:left-8 text-white/90">
-              <div className="eyebrow text-white/70">Featured · March</div>
-            </div>
-            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-white max-w-md">
-              <div className="font-serif-display text-4xl md:text-6xl leading-none">Taupo</div>
-              <div className="font-serif-display italic text-base md:text-xl mt-2 text-white/90">
-                Ironman New Zealand
+            {/* Taupo */}
+            <motion.a
+              href="#start"
+              data-testid="destination-taupo"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+              style={{ minHeight: 230 }}
+            >
+              <img
+                src={IMAGES.taupo}
+                alt="Taupo"
+                className="hero-img absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute top-4 left-4 md:top-6 md:left-8 text-white/90">
+                <div className="eyebrow text-white/70 text-[10px]">Featured · March</div>
               </div>
-              <div className="mt-6 inline-flex items-center gap-2 text-[11px] md:text-[12px] tracking-[0.22em] uppercase font-semibold">
-                Plan a Taupo Journey <ArrowUpRight size={14} />
+              <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 text-white">
+                <div className="font-serif-display text-3xl md:text-5xl leading-none">Taupo</div>
+                <div className="font-serif-display italic text-sm md:text-lg mt-1 text-white/90">
+                  Ironman New Zealand
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase font-semibold">
+                  Plan a Taupo Journey <ArrowUpRight size={12} />
+                </div>
               </div>
-            </div>
-          </motion.a>
+            </motion.a>
+
+            {/* Cairns */}
+            <motion.a
+              href="#start"
+              data-testid="destination-cairns"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+              style={{ minHeight: 230 }}
+            >
+              <img
+                src={IMAGES.cairns}
+                alt="Cairns"
+                className="hero-img absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 text-white/90">
+                <div className="eyebrow text-white/70 text-[10px]">Featured · July</div>
+              </div>
+              <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 text-white">
+                <div className="font-serif-display text-3xl md:text-5xl leading-none">Cairns</div>
+                <div className="font-serif-display italic text-sm md:text-lg mt-1 text-white/90">
+                  Ironman Cairns
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase font-semibold">
+                  Plan a Cairns Journey <ArrowUpRight size={12} />
+                </div>
+              </div>
+            </motion.a>
+
+            {/* Sydney */}
+            <motion.a
+              href="#start"
+              data-testid="destination-sydney"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+              style={{ minHeight: 230 }}
+            >
+              <img
+                src={IMAGES.sydney}
+                alt="Sydney"
+                className="hero-img absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute top-4 left-4 md:top-6 md:left-8 text-white/90">
+                <div className="eyebrow text-white/70 text-[10px]">Featured · August</div>
+              </div>
+              <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 text-white">
+                <div className="font-serif-display text-3xl md:text-5xl leading-none">Sydney</div>
+                <div className="font-serif-display italic text-sm md:text-lg mt-1 text-white/90">
+                  TCS Sydney Marathon
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase font-semibold">
+                  Plan a Sydney Journey <ArrowUpRight size={12} />
+                </div>
+              </div>
+            </motion.a>
+
+            {/* Queenstown */}
+            <motion.a
+              href="#start"
+              data-testid="destination-queenstown"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="col-span-2 relative overflow-hidden"
+              style={{ minHeight: 230 }}
+            >
+              <img
+                src={IMAGES.queenstown}
+                alt="Queenstown"
+                className="hero-img absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute top-4 left-4 md:top-6 md:left-8 text-white/90">
+                <div className="eyebrow text-white/70 text-[10px]">Featured · September</div>
+              </div>
+              <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 text-white">
+                <div className="font-serif-display text-3xl md:text-5xl leading-none">Queenstown</div>
+                <div className="font-serif-display italic text-sm md:text-lg mt-1 text-white/90">
+                  NZ Queenstown Marathon
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase font-semibold">
+                  Plan a Queenstown Journey <ArrowUpRight size={12} />
+                </div>
+              </div>
+            </motion.a>
+          </div>
         </div>
 
         {/* List of other destinations */}
         <div className="mt-16 border-t border-[#E5E3DB]">
-          {destinations.slice(0, 7).map((d, i) => (
+          {destinations.slice(0, 10).map((d, i) => (
             <motion.a
               key={d.city + i}
               href="#start"
