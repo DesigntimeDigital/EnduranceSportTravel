@@ -917,11 +917,36 @@ const Testimonials = () => {
 
 /* ---------------------------- CTA / Start Planning ---------------------------- */
 const StartPlanning = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [race, setRace] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const handle = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handle = async (e) => {
     e.preventDefault();
-    if (email) setSubmitted(true);
+    if (!email) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, race }),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.detail || "Something went wrong. Please try again or email us directly.");
+      }
+    } catch (err) {
+      console.error("Form submission failed", err);
+      setError("Could not reach our server. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <section
@@ -956,6 +981,20 @@ const StartPlanning = () => {
                     business day.
                   </div>
                 </div>
+              ) : error ? (
+                <div data-testid="start-planning-error">
+                  <div className="eyebrow text-[#B05757] mb-4">Error</div>
+                  <div className="font-serif-display text-2xl text-[#111111] mb-6">
+                    {error}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setError(""); setEmail(""); setName(""); setRace(""); }}
+                    className="btn-primary px-8 py-5 text-[12px] tracking-[0.24em] uppercase font-semibold w-full justify-center"
+                  >
+                    Try Again
+                  </button>
+                </div>
               ) : (
                 <form onSubmit={handle} className="space-y-6">
                   <div>
@@ -963,6 +1002,8 @@ const StartPlanning = () => {
                     <input
                       data-testid="form-name"
                       type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       className="mt-2 w-full border-b border-[#E5E3DB] bg-transparent py-3 font-serif-display text-2xl text-[#111111] focus:outline-none focus:border-[#2C3E35] transition-colors"
                       placeholder="Your full name"
                     />
@@ -986,6 +1027,8 @@ const StartPlanning = () => {
                     <input
                       data-testid="form-race"
                       type="text"
+                      value={race}
+                      onChange={(e) => setRace(e.target.value)}
                       className="mt-2 w-full border-b border-[#E5E3DB] bg-transparent py-3 font-serif-display text-2xl text-[#111111] focus:outline-none focus:border-[#2C3E35] transition-colors"
                       placeholder="e.g. Boston Marathon, April"
                     />
@@ -993,9 +1036,10 @@ const StartPlanning = () => {
                   <button
                     data-testid="form-submit"
                     type="submit"
-                    className="btn-primary mt-4 px-8 py-5 text-[12px] tracking-[0.24em] uppercase font-semibold inline-flex items-center gap-3 w-full justify-center"
+                    disabled={loading}
+                    className="btn-primary mt-4 px-8 py-5 text-[12px] tracking-[0.24em] uppercase font-semibold inline-flex items-center gap-3 w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Begin Planning <ArrowUpRight size={14} />
+                    {loading ? "Sending…" : "Begin Planning"} {!loading && <ArrowUpRight size={14} />}
                   </button>
                   <p className="text-[11px] text-[#595959] leading-relaxed">
                     By submitting, you'll speak with an endurance travel planner — not

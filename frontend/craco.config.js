@@ -61,6 +61,17 @@ let webpackConfig = {
 };
 
 webpackConfig.devServer = (devServerConfig) => {
+  // Proxy /api requests to the FastAPI backend in development
+  const apiProxy = (req, res, proxy) => {
+    if (req.url.startsWith('/api')) {
+      proxy.web(req, res, {
+        target: process.env.API_BACKEND || 'http://localhost:8000',
+        changeOrigin: true,
+        pathRewrite: {},
+      });
+    }
+  };
+
   // Add health check endpoints if enabled
   if (config.enableHealthCheck && setupHealthEndpoints && healthPluginInstance) {
     const originalSetupMiddlewares = devServerConfig.setupMiddlewares;
@@ -71,6 +82,12 @@ webpackConfig.devServer = (devServerConfig) => {
         middlewares = originalSetupMiddlewares(middlewares, devServer);
       }
 
+      // Add API proxy
+      middlewares.unshift((req, res, next) => {
+        apiProxy(req, res, devServer.proxy);
+        next();
+      });
+
       // Setup health endpoints
       setupHealthEndpoints(devServer, healthPluginInstance);
 
@@ -78,7 +95,16 @@ webpackConfig.devServer = (devServerConfig) => {
     };
   }
 
-  return devServerConfig;
+  return {
+    ...devServerConfig,
+    proxy: {
+      '/api': {
+        target: process.env.API_BACKEND || 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  };
 };
 
 // Wrap with visual edits (automatically adds babel plugin, dev server, and overlay in dev mode)

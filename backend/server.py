@@ -4,12 +4,22 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import asyncio
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import uuid
 from datetime import datetime, timezone
 
+# Configure logging before any code uses it
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -29,7 +39,7 @@ api_router = APIRouter(prefix="/api")
 # Define Models
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -41,6 +51,83 @@ class StatusCheckCreate(BaseModel):
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
+
+# Email configuration from environment variables
+SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+SMTP_USER = os.environ.get("SMTP_USER", "")
+SMTP_PASS = os.environ.get("SMTP_PASS", "")
+EMAIL_TO = os.environ.get("EMAIL_TO", "info@endurancesporttravel.com")
+EMAIL_FROM = os.environ.get("EMAIL_FROM", SMTP_USER or "no-reply@endurancesporttravel.com")
+
+
+def _send_email_sync(msg, smtp_host, smtp_port, smtp_user, smtp_pass):
+    """Send email synchronously — called from a thread pool so it doesn't block the event loop."""
+    server = smtplib.SMTP(smtp_host, smtp_port)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login(smtp_user, smtp_pass)
+    server.send_message(msg)
+    server.quit()
+
+
+class ContactSubmission(BaseModel):
+    name: str
+    email: str
+    race: str
+
+
+class ContactRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: str
+    race: str
+    email_sent: bool = False
+    submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+@api_router.post("/contact")
+async def submit_contact(submission: ContactSubmission):
+    # Always save to MongoDB first — data is never lost
+    record = ContactRecord(
+        name=submission.name,
+        email=submission.email,
+        race=submission.race,
+    )
+    doc = record.model_dump()
+    doc['submitted_at'] = doc['submitted_at'].isoformat()
+    insert_result = await db.contact_submissions.insert_one(doc)
+    record_id = insert_result.inserted_id
+
+    if not SMTP_USER or not SMTP_PASS:
+        logger.warning("SMTP not configured — submission saved to DB only")
+        return {"message": "Inbox updated. We will be in touch within one business day."}, 200
+
+    msg = MIMEMultipart()
+    msg["From"] = EMAIL_FROM
+    msg["To"] = EMAIL_TO
+    msg["Subject"] = f"Start Planning: {submission.name} — {submission.race}"
+
+    body = f"""Name: {submission.name}
+Email: {submission.email}
+Race: {submission.race}
+"""
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        await asyncio.to_thread(
+            _send_email_sync, msg, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS
+        )
+        await db.contact_submissions.find_one_and_update(
+            {"_id": record_id}, {"$set": {"email_sent": True}}
+        )
+    except Exception as exc:
+        logger.error("Failed to send email: %s", exc)
+
+    return {"message": "Inbox updated. We will be in touch within one business day."}
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
@@ -77,12 +164,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
