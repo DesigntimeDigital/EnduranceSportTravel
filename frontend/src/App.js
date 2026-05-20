@@ -1024,10 +1024,10 @@ const StartPlanning = () => {
                   </div>
                   <div>
                     <label className="eyebrow text-[#595959]">
-                      The Race You Have in Mind
+                      The Event You Have in Mind
                     </label>
                     <input
-                      data-testid="form-race"
+                      data-testid="form-event"
                       type="text"
                       value={race}
                       onChange={(e) => setRace(e.target.value)}
