@@ -920,6 +920,7 @@ const StartPlanning = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [race, setRace] = useState("");
+  const [newsletter, setNewsletter] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -933,7 +934,7 @@ const StartPlanning = () => {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, race }),
+        body: JSON.stringify({ name, email, race, newsletter }),
       });
       if (res.ok) {
         setSubmitted(true);
@@ -965,9 +966,10 @@ const StartPlanning = () => {
               <span className="italic text-[#B08D57]">next start line.</span>
             </h2>
             <p className="mt-8 font-sans-body text-[15px] md:text-[17px] text-[#F7F5F0]/70 max-w-xl leading-[1.7]">
-              A race on the calendar. A season in mind. A one-line note is enough —
-              our team will reach out within one business day to design a journey
-              built entirely around you.
+              A race on the calendar. A season in mind. A multi-day cycling tour
+              across the hills of Tuscany. A one-line note is enough — our team will
+              reach out within one business day to design a journey built entirely
+              around you.
             </p>
           </div>
 
@@ -989,7 +991,7 @@ const StartPlanning = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => { setError(""); setEmail(""); setName(""); setRace(""); }}
+                    onClick={() => { setError(""); setEmail(""); setName(""); setRace(""); setNewsletter(true); }}
                     className="btn-primary px-8 py-5 text-[12px] tracking-[0.24em] uppercase font-semibold w-full justify-center"
                   >
                     Try Again
@@ -1032,6 +1034,23 @@ const StartPlanning = () => {
                       className="mt-2 w-full border-b border-[#E5E3DB] bg-transparent py-3 font-serif-display text-2xl text-[#111111] focus:outline-none focus:border-[#2C3E35] transition-colors"
                       placeholder="e.g. Boston Marathon, April"
                     />
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <input
+                      data-testid="form-newsletter"
+                      type="checkbox"
+                      id="newsletter"
+                      checked={newsletter}
+                      onChange={(e) => setNewsletter(e.target.checked)}
+                      className="mt-1 w-4 h-4 rounded border-[#E5E3DB] text-[#2C3E35] focus:ring-[#2C3E35] focus:ring-offset-0"
+                    />
+                    <label
+                      htmlFor="newsletter"
+                      className="text-[13px] text-[#595959] leading-relaxed cursor-pointer"
+                    >
+                      Sign me up for the EST newsletter — race updates, destination
+                      stories, and planning tips. Unsubscribe anytime.
+                    </label>
                   </div>
                   <button
                     data-testid="form-submit"
