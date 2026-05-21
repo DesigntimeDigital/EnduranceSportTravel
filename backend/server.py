@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import uuid
 from datetime import datetime, timezone
+import requests
 
 # Configure logging before any code uses it
 logging.basicConfig(
@@ -76,6 +77,7 @@ class ContactSubmission(BaseModel):
     name: str
     email: str
     race: str
+    newsletter: bool = False
 
 
 class ContactRecord(BaseModel):
@@ -85,8 +87,27 @@ class ContactRecord(BaseModel):
     name: str
     email: str
     race: str
+    newsletter: bool = False
     email_sent: bool = False
+    subscribed_to_kit: bool = False
     submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+KIT_API_KEY = os.environ.get("KIT_API_KEY", "")
+
+
+def _subscribe_to_kit(email_address, first_name, api_key):
+    """Subscribe a user to Kit (convertkit) via the subscribers API."""
+    requests.post(
+        "https://api.kit.com/v4/subscribers",
+        headers={"X-Kit-Api-Key": api_key},
+        json={
+            "email_address": email_address,
+            "first_name": first_name or None,
+            "fields": {"source": "EST-website"},
+        },
+        timeout=10,
+    )
 
 
 @api_router.post("/contact")
@@ -96,11 +117,25 @@ async def submit_contact(submission: ContactSubmission):
         name=submission.name,
         email=submission.email,
         race=submission.race,
+        newsletter=submission.newsletter,
     )
     doc = record.model_dump()
     doc['submitted_at'] = doc['submitted_at'].isoformat()
     insert_result = await db.contact_submissions.insert_one(doc)
     record_id = insert_result.inserted_id
+
+    # Subscribe to Kit if user opted in
+    if submission.newsletter and KIT_API_KEY:
+        try:
+            first_name = submission.name.split()[0] if submission.name else None
+            await asyncio.to_thread(
+                _subscribe_to_kit, submission.email, first_name, KIT_API_KEY
+            )
+            await db.contact_submissions.find_one_and_update(
+                {"_id": record_id}, {"$set": {"subscribed_to_kit": True}}
+            )
+        except Exception as exc:
+            logger.error("Failed to subscribe to Kit: %s", exc)
 
     if not SMTP_USER or not SMTP_PASS:
         logger.warning("SMTP not configured — submission saved to DB only")
@@ -114,6 +149,7 @@ async def submit_contact(submission: ContactSubmission):
     body = f"""Name: {submission.name}
 Email: {submission.email}
 Race: {submission.race}
+Newsletter: {submission.newsletter}
 """
     msg.attach(MIMEText(body, "plain"))
 
