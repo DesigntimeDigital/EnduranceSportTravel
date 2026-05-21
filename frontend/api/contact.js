@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   if (newsletter && kitApiKey) {
     try {
       const firstName = name ? name.split(' ')[0] : undefined;
-      await fetch('https://api.kit.com/v4/subscribers', {
+      const kitRes = await fetch('https://api.kit.com/v4/subscribers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,9 +31,17 @@ export default async function handler(req, res) {
           fields: { source: 'EST-website' },
         }),
       });
+      if (!kitRes.ok) {
+        const body = await kitRes.text();
+        console.error('Kit API error:', kitRes.status, body);
+      } else {
+        console.log('Kit subscription created for:', email);
+      }
     } catch (err) {
       console.error('Failed to subscribe to Kit:', err);
     }
+  } else if (newsletter && !kitApiKey) {
+    console.warn('Newsletter opt-in received but KIT_API_KEY is not set');
   }
 
   const smtpUser = process.env.SMTP_USER;
