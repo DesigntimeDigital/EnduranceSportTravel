@@ -15,7 +15,6 @@ import uuid
 from datetime import datetime, timezone
 import requests
 
-# Configure logging before any code uses it
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -25,59 +24,56 @@ logger = logging.getLogger(__name__)
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
 
-# Define Models
 class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
+    model_config = ConfigDict(extra="ignore")
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+
 class ContactSubmission(BaseModel):
+    name: str = ""
+    email: str
+    race: str = ""
+    newsletter: bool = False
+
+
+class ContactRecord(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     email: str
     race: str = ""
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    newsletter: bool = False
+    email_sent: bool = False
+    subscribed_to_kit: bool = False
+    submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class ContactSubmissionCreate(BaseModel):
-    name: str = ""
-    email: str
-    race: str = ""
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-# Email configuration from environment variables
 SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
 SMTP_USER = os.environ.get("SMTP_USER", "")
 SMTP_PASS = os.environ.get("SMTP_PASS", "")
 EMAIL_TO = os.environ.get("EMAIL_TO", "info@endurancesporttravel.com")
 EMAIL_FROM = os.environ.get("EMAIL_FROM", SMTP_USER or "no-reply@endurancesporttravel.com")
+KIT_API_KEY = os.environ.get("KIT_API_KEY", "")
 
 
 def _send_email_sync(msg, smtp_host, smtp_port, smtp_user, smtp_pass):
-    """Send email synchronously — called from a thread pool so it doesn't block the event loop."""
     server = smtplib.SMTP(smtp_host, smtp_port)
     server.ehlo()
     server.starttls()
@@ -87,31 +83,7 @@ def _send_email_sync(msg, smtp_host, smtp_port, smtp_user, smtp_pass):
     server.quit()
 
 
-class ContactSubmission(BaseModel):
-    name: str
-    email: str
-    race: str
-    newsletter: bool = False
-
-
-class ContactRecord(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    name: str
-    email: str
-    race: str
-    newsletter: bool = False
-    email_sent: bool = False
-    subscribed_to_kit: bool = False
-    submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-
-KIT_API_KEY = os.environ.get("KIT_API_KEY", "")
-
-
 def _subscribe_to_kit(email_address, first_name, api_key):
-    """Subscribe a user to Kit (convertkit) via the subscribers API."""
     requests.post(
         "https://api.kit.com/v4/subscribers",
         headers={"X-Kit-Api-Key": api_key},
@@ -124,9 +96,13 @@ def _subscribe_to_kit(email_address, first_name, api_key):
     )
 
 
+@api_router.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+
 @api_router.post("/contact")
 async def submit_contact(submission: ContactSubmission):
-    # Always save to MongoDB first — data is never lost
     record = ContactRecord(
         name=submission.name,
         email=submission.email,
@@ -138,7 +114,6 @@ async def submit_contact(submission: ContactSubmission):
     insert_result = await db.contact_submissions.insert_one(doc)
     record_id = insert_result.inserted_id
 
-    # Subscribe to Kit if user opted in
     if submission.newsletter and KIT_API_KEY:
         try:
             first_name = submission.name.split()[0] if submission.name else None
@@ -153,13 +128,12 @@ async def submit_contact(submission: ContactSubmission):
 
     if not SMTP_USER or not SMTP_PASS:
         logger.warning("SMTP not configured — submission saved to DB only")
-        return {"message": "Inbox updated. We will be in touch within one business day."}, 200
+        return {"message": "Inbox updated. We will be in touch within one business day."}
 
     msg = MIMEMultipart()
     msg["From"] = EMAIL_FROM
     msg["To"] = EMAIL_TO
     msg["Subject"] = f"Start Planning: {submission.name} — {submission.race}"
-
     body = f"""Name: {submission.name}
 Email: {submission.email}
 Race: {submission.race}
@@ -179,40 +153,26 @@ Newsletter: {submission.newsletter}
 
     return {"message": "Inbox updated. We will be in touch within one business day."}
 
+
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
     status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
     doc = status_obj.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
-    
     _ = await db.status_checks.insert_one(doc)
     return status_obj
 
+
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
     status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
     for check in status_checks:
         if isinstance(check['timestamp'], str):
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
     return status_checks
 
-@api_router.post("/contact", response_model=ContactSubmission)
-async def submit_contact(input: ContactSubmissionCreate):
-    submission_dict = input.model_dump()
-    submission = ContactSubmission(**submission_dict)
-    doc = submission.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    await db.contact_submissions.insert_one(doc)
-    return submission
 
-# Include the router in the main app
 app.include_router(api_router)
 
 app.add_middleware(
