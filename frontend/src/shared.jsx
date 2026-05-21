@@ -31,8 +31,8 @@ export const Navigation = () => {
       }`}
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
-        <a
-          href="#top"
+        <Link
+          to="/"
           data-testid="logo-link"
           className="flex items-baseline gap-2"
         >
@@ -42,7 +42,7 @@ export const Navigation = () => {
           <span className="font-serif-display italic text-[22px] leading-none text-[#2C3E35] tracking-tight">
             Sport Travel
           </span>
-        </a>
+        </Link>
 
         <nav className="hidden lg:flex items-center gap-10">
           {links.map((l) => (
