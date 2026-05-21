@@ -101,6 +101,11 @@ async def root():
     return {"message": "Hello World"}
 
 
+@api_router.get("/contact")
+async def contact_config():
+    return {"status": "active", "endpoint": "/api/contact", "method": "POST"}
+
+
 @api_router.post("/contact")
 async def submit_contact(submission: ContactSubmission):
     record = ContactRecord(
