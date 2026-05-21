@@ -15,6 +15,27 @@ export default async function handler(req, res) {
     return res.status(400).json({ detail: 'Email is required' });
   }
 
+  const kitApiKey = process.env.KIT_API_KEY;
+  if (newsletter && kitApiKey) {
+    try {
+      const firstName = name ? name.split(' ')[0] : undefined;
+      await fetch('https://api.kit.com/v4/subscribers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Kit-Api-Key': kitApiKey,
+        },
+        body: JSON.stringify({
+          email_address: email,
+          first_name: firstName,
+          fields: { source: 'EST-website' },
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to subscribe to Kit:', err);
+    }
+  }
+
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
 
