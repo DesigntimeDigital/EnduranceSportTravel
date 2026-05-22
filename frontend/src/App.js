@@ -24,7 +24,7 @@ const IMAGES = {
   taupo: "https://images.unsplash.com/photo-1602593978328-fa9efcf69947?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHx0YXVwb3wlMjBuZXclMjBlYWxhbmR8ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
   cairns: "https://images.unsplash.com/photo-1552252793-5e302d8f5daf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxjYWlybnMlMjBncmVhdCUyMmJhcmllcmVyJTIwdmFsdCB8ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
   sydney: "/syd-downtown.jpg",
-  queenstown: "https://images.unsplash.com/photo-1506973233135-2c4dee16ddb2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxxdWVlbnN0b3duJTIwbmV3JTIwZWFsYW5kJTIwc2tpJTIwbW91bnRhaW58ZW58MHx8fHwxNzQ4MjY1ODk3fDA&ixlib=rb-4.1.0&q=85",
+  queenstown: "/queenstown.jpg",
 };
 
 const fadeUp = {
