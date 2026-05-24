@@ -39,7 +39,7 @@ export const Navigation = () => {
           <img
             src="/est-logo.svg"
             alt="Endurance Sport Travel"
-            className="h-10 w-auto"
+            className="h-16 w-auto"
           />
         </Link>
 
@@ -116,7 +116,7 @@ export const Footer = () => {
             <img
               src="/est-logo.svg"
               alt="Endurance Sport Travel"
-              className="h-14 w-auto"
+              className="h-20 w-auto"
             />
             <p className="mt-6 text-[14px] text-[#595959] max-w-sm leading-relaxed">
               A division of Outdoor Travel Adventures. Designing race journeys for
