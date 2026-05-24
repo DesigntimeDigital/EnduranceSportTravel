@@ -34,14 +34,13 @@ export const Navigation = () => {
         <Link
           to="/"
           data-testid="logo-link"
-          className="flex items-baseline gap-2"
+          className="flex items-center"
         >
-          <span className="font-serif-display text-[22px] leading-none text-[#111111] tracking-tight">
-            Endurance
-          </span>
-          <span className="font-serif-display italic text-[22px] leading-none text-[#2C3E35] tracking-tight">
-            Sport Travel
-          </span>
+          <img
+            src="/est-logo.svg"
+            alt="Endurance Sport Travel"
+            className="h-10 w-auto"
+          />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-10">
@@ -114,9 +113,11 @@ export const Footer = () => {
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-16 md:py-20">
         <div className="grid grid-cols-12 gap-6 md:gap-10">
           <div className="col-span-12 md:col-span-5">
-            <div className="font-serif-display text-3xl md:text-4xl text-[#111111] leading-tight">
-              Endurance <span className="italic text-[#2C3E35]">Sport Travel</span>
-            </div>
+            <img
+              src="/est-logo.svg"
+              alt="Endurance Sport Travel"
+              className="h-14 w-auto"
+            />
             <p className="mt-6 text-[14px] text-[#595959] max-w-sm leading-relaxed">
               A division of Outdoor Travel Adventures. Designing race journeys for
               marathon, triathlon, and cycling athletes since 1996.
