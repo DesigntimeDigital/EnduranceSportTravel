@@ -30,7 +30,7 @@ export const Navigation = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-28 flex items-center justify-between">
         <Link
           to="/"
           data-testid="logo-link"
@@ -39,7 +39,7 @@ export const Navigation = () => {
           <img
             src="/est-logo.svg"
             alt="Endurance Sport Travel"
-            className="h-16 w-auto"
+            className="h-24 w-auto"
           />
         </Link>
 
@@ -116,7 +116,7 @@ export const Footer = () => {
             <img
               src="/est-logo.svg"
               alt="Endurance Sport Travel"
-              className="h-20 w-auto"
+              className="h-36 w-auto"
             />
             <p className="mt-6 text-[14px] text-[#595959] max-w-sm leading-relaxed">
               A division of Outdoor Travel Adventures. Designing race journeys for
