@@ -37,7 +37,7 @@ export const Navigation = () => {
           className="flex items-center"
         >
           <img
-            src="/est-logo.svg"
+            src="/est-logo.jpg"
             alt="Endurance Sport Travel"
             className="h-32 w-auto"
           />
@@ -114,7 +114,7 @@ export const Footer = () => {
         <div className="grid grid-cols-12 gap-6 md:gap-10">
           <div className="col-span-12 md:col-span-5">
             <img
-              src="/est-logo.svg"
+              src="/est-logo.jpg"
               alt="Endurance Sport Travel"
               className="h-52 w-auto"
             />
